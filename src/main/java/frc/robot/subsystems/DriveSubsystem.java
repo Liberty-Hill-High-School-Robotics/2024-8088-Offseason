@@ -21,10 +21,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-//import edu.wpi.first.math.proto.Kinematics;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,6 +33,8 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.utils.SwerveUtils;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Timer;
 
  
 
@@ -104,17 +104,25 @@ public class DriveSubsystem extends SubsystemBase {
   private double rightTrigger = 0;
 
   // Odometry class for tracking robot pose
-  SwerveDriveOdometry m_odometry = new SwerveDriveOdometry(
-      DriveConstants.kDriveKinematics,
+    /*
+    private final SwerveDriveKinematics m_Kinematics = new SwerveDriveKinematics(
+    DriveConstants.Module_Info[0], DriveConstants.Module_Info[1], DriveConstants.Module_Info[2], DriveConstants.Module_Info[3]);
+     */
 
-      //we are using .getangle because it returns the correct boolean, it SHOULD be the same as .getyaw, it was replaced for all instances
-      Rotation2d.fromDegrees(m_gyro.getYaw().getValue()),
+  private final SwerveDrivePoseEstimator m_poseEstimator = 
+  new SwerveDrivePoseEstimator(
+      DriveConstants.kDriveKinematics,
+      m_gyro.getRotation2d(),
       new SwerveModulePosition[] {
           m_frontLeft.getPosition(),
           m_frontRight.getPosition(),
           m_rearLeft.getPosition(),
           m_rearRight.getPosition()
-      });
+      },
+      new Pose2d(),
+      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5)),
+      VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(30))
+      );
 
   /** Creates a new DriveSubsystem. */
   public DriveSubsystem() {
@@ -159,8 +167,8 @@ public class DriveSubsystem extends SubsystemBase {
     leftTrigger = m_driverControllerLocal.getLeftTriggerAxis();
 
     // Update the odometry in the periodic block
-    SwerveDriveOdometry.update(
-        Rotation2d.fromDegrees(m_gyro.getYaw().getValue()),
+    m_poseEstimator.update(
+        m_gyro.getRotation2d(),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -194,7 +202,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @return The pose.
    */
   public Pose2d getPose() {
-    return m_odometry.getPoseMeters();
+    return m_poseEstimator.getEstimatedPosition();
   }
 
   /**
@@ -203,7 +211,7 @@ public class DriveSubsystem extends SubsystemBase {
    * @param pose The pose to which to set the odometry.
    */
   public void resetOdometry(Pose2d pose) {
-    m_odometry.resetPosition(
+    m_poseEstimator.resetPosition(
         Rotation2d.fromDegrees(m_gyro.getYaw().getValue()),
         new SwerveModulePosition[] {
             m_frontLeft.getPosition(),
@@ -343,6 +351,10 @@ public class DriveSubsystem extends SubsystemBase {
     return Rotation2d.fromDegrees(m_gyro.getYaw().getValue()).getDegrees();
   }
 
+  public Rotation2d getgyro(){
+    return Rotation2d.fromDegrees(m_gyro.getYaw().getValue());
+  }
+
   /**
    * Returns the turn rate of the robot.
    *
@@ -353,20 +365,6 @@ public class DriveSubsystem extends SubsystemBase {
     //this is something close, xyz to roll pitch and yaw, see link below
     //.getrate replaced with .getrawgyro (https://www.chiefdelphi.com/t/does-pigeon-imu-have-an-equivalent-to-navx-getrate/375640)
   }
-
-  /* 
-  public void rightSnap(DriveSubsystem m_robotDrive){
-    double degree = getHeading();
-   
-    
-    if(degree >= .75 && degree < .4 ){
-        drive(0,0, .3, true, true);
-    }if(degree < 0){
-      drive(0,0, .3, true, true);
-    }
-    
-  }
-  */
 
   public boolean isright(){
     double degree = getHeading();
@@ -423,5 +421,22 @@ public class DriveSubsystem extends SubsystemBase {
   public double getGyroRotRate(){
     double output = m_gyro.getRate();
     return output;
+  }
+
+  public void updateOdometry() {
+    m_poseEstimator.update(
+        m_gyro.getRotation2d(),
+        new SwerveModulePosition[] {
+          m_frontLeft.getPosition(),
+          m_frontRight.getPosition(),
+          m_rearLeft.getPosition(),
+          m_rearRight.getPosition()
+        });
+
+    // Also apply vision measurements. We use 0.3 seconds in the past as an example -- on
+    // a real robot, this must be calculated based either on latency or timestamps.
+    m_poseEstimator.addVisionMeasurement(
+        LimelightHelpers.getBotPose2d("limelight"),
+        Timer.getFPGATimestamp() - 0.3);
   }
 }
