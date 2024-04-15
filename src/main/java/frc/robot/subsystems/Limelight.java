@@ -30,7 +30,39 @@ public class Limelight extends SubsystemBase {
         else{
             canSee = true;
         }
-        //boolean tv = RobotContainer.getTv();
+//---------------------------------------------------------------------------------
+//------------------- MATH! (Transcribed from Mr. Tice's notes) -------------------
+//---------------------------------------------------------------------------------
+        /* -Requires tx and ty for 2 ATs
+         * -from previous notes, calculate distance to both AT1 and AT2 DO NOT ASSUME THAT TX = 0
+         * 
+         * 
+         * Xnormalized = (tan(tx)) / (√1 + tan²(ty) + tan²(tx))
+         * 
+         * Ynormalized = (tan(ty)) / (√1 + tan²(ty) + tan²(tx))
+         * 
+         * Scale = ((Target Height) - (Camera Height)) / Ynormalized
+         *  = (▲H) / (Ynormalized)
+         * 
+         * Distance = ((√x²normal + z²norm) * scale)
+         *  = (▲H) / (tan(ty) * cos(tx))
+         * 
+         * SEE NOTES FOR DIAGRAM
+         * 
+         * Θ = π - Θ▲ - Θa2 (law of sum of angles)
+         * 
+         * a = (π / 2) - ΘAT1
+         * a = -(π / 2) + Θ▲ + ΘAT2
+         * 
+         * ((SinΘ AT2) / (d1)) = ((SinΘ▲) / (dAT))
+         * (Law of Sines) = Θa2 = arcsin((d1 /d2) * sinΘ▲)
+         * 
+         * a = -(π / 2) + ▲ - arcsin((d1 / dAT) * sin(Θ▲))
+         */
+
+
+
+//---------------------------------------------------------------------------------
 
         //post to smart dashboard periodically
         SmartDashboard.putNumber("LimelightX", x);
@@ -38,9 +70,6 @@ public class Limelight extends SubsystemBase {
         SmartDashboard.putNumber("LimelightArea", area);
         SmartDashboard.putNumber("GetDistance", getDistance());
         SmartDashboard.putBoolean("cansee?", canSee);
-
-        
-
     }
     
 
