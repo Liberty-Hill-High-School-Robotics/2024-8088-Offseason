@@ -5,7 +5,6 @@ package frc.robot;
 
 //auton imports
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
 //buttons/controller/command imports
@@ -26,29 +25,9 @@ import frc.robot.commands.DriveAutonCommands.resetHeading;
 import frc.robot.commands.DriveAutonCommands.rightSnap;
 import frc.robot.commands.DriveAutonCommands.sDrive;
 import frc.robot.commands.DriveAutonCommands.xPattern;
-import frc.robot.commands.LEDCommands.CandleOff;
-import frc.robot.commands.LEDCommands.Animations.CandleColorFlow;
-import frc.robot.commands.LEDCommands.Animations.CandleFire;
-import frc.robot.commands.LEDCommands.Animations.CandleLarson;
-import frc.robot.commands.LEDCommands.Animations.CandleRGBFade;
-import frc.robot.commands.LEDCommands.Animations.CandleRainbow;
-import frc.robot.commands.LEDCommands.Animations.CandleSingleFade;
-import frc.robot.commands.LEDCommands.Animations.CandleStrobe;
-import frc.robot.commands.LEDCommands.Animations.CandleStrobeBlue;
-import frc.robot.commands.LEDCommands.Animations.CandleStrobeGreen;
-import frc.robot.commands.LEDCommands.Animations.CandleStrobeRed;
-import frc.robot.commands.LEDCommands.Animations.CandleTwinkle;
-import frc.robot.commands.LEDCommands.Colors.CandleBlue;
-import frc.robot.commands.LEDCommands.Colors.CandleDimPurple;
-import frc.robot.commands.LEDCommands.Colors.CandleGold;
-import frc.robot.commands.LEDCommands.Colors.CandleGreen;
-import frc.robot.commands.LEDCommands.Colors.CandleOrange;
-import frc.robot.commands.LEDCommands.Colors.CandlePurple;
-import frc.robot.commands.LEDCommands.Colors.CandleRed;
 //subsystem imports
 import frc.robot.subsystems.DriveSubsystem;
-import frc.robot.subsystems.LEDs;
-import frc.robot.subsystems.Limelight;
+import frc.robot.subsystems.Vision;
 
 /*
  * This class is where the bulk of the robot should be declared.  Since Command-based is a
@@ -59,8 +38,7 @@ import frc.robot.subsystems.Limelight;
 
 public class RobotContainer {
   //Define the robot's subsystems
-  public final Limelight m_limelight = new Limelight();
-  public final LEDs m_leds = new LEDs();
+  public final Vision m_limelight = new Vision();
   private final DriveSubsystem m_drivesubsystem = new DriveSubsystem();
 
 
@@ -82,6 +60,7 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Mode", autoChooser); 
 
     //Put the autons on the chooser and on SmartDashboard
+    /*
     SmartDashboard.putData("AmpPlayoff", new PathPlannerAuto("AmpPlayoff"));
     SmartDashboard.putData("SourcePlayoff", new PathPlannerAuto("SourcePlayoff"));
     SmartDashboard.putData("MiddleQuals", new PathPlannerAuto("MiddleQuals"));
@@ -90,6 +69,7 @@ public class RobotContainer {
     SmartDashboard.putData("OneNoteSource", new PathPlannerAuto("OneNoteSource"));
     SmartDashboard.putData("4.5NoteMiddle", new PathPlannerAuto("4.5NoteMiddle"));
     SmartDashboard.putData("5NoteMiddle", new PathPlannerAuto("5NoteMiddle"));
+    */
 
 
     //Config for joysticks
@@ -109,29 +89,6 @@ public class RobotContainer {
     SmartDashboard.putData("sDrive", new sDrive(m_drivesubsystem));
     SmartDashboard.putData("TriggerTurn", new TriggerTurn(m_drivesubsystem));
     SmartDashboard.putData("xPattern", new xPattern(m_drivesubsystem));
-
-    //LED Exports
-    SmartDashboard.putData("CandleOff", new CandleOff(m_leds));
-    //Color
-    SmartDashboard.putData("CandleBlue", new CandleBlue(m_leds));
-    SmartDashboard.putData("CandleDimPurple", new CandleDimPurple(m_leds));
-    SmartDashboard.putData("CandleGold", new CandleGold(m_leds));
-    SmartDashboard.putData("CandleGreen", new CandleGreen(m_leds));
-    SmartDashboard.putData("CandleOrange", new CandleOrange(m_leds));
-    SmartDashboard.putData("CandlePurple", new CandlePurple(m_leds));
-    SmartDashboard.putData("CandleRed", new CandleRed(m_leds));
-    //Animations
-    SmartDashboard.putData("CandleColorFlow", new CandleColorFlow(m_leds));
-    SmartDashboard.putData("CandleFire", new CandleFire(m_leds));
-    SmartDashboard.putData("CandleLarson", new CandleLarson(m_leds));
-    SmartDashboard.putData("CandleRainbow", new CandleRainbow(m_leds));
-    SmartDashboard.putData("CandleRGBFade", new CandleRGBFade(m_leds));
-    SmartDashboard.putData("CandleSingleFade", new CandleSingleFade(m_leds));
-    SmartDashboard.putData("CandleStrobe", new CandleStrobe(m_leds));
-    SmartDashboard.putData("CandleStrobeBlue", new CandleStrobeBlue(m_leds));
-    SmartDashboard.putData("CandleStrobeGreen", new CandleStrobeGreen(m_leds));
-    SmartDashboard.putData("CandleStrobeRed", new CandleStrobeRed(m_leds));
-    SmartDashboard.putData("CandleTwinkle", new CandleTwinkle(m_leds));
 
     //Other
     SmartDashboard.putNumber("DriverLeftJoystickXValue", m_driverController.getLeftX());
