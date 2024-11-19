@@ -2,7 +2,11 @@ package frc.robot;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
@@ -23,6 +27,13 @@ public final class Constants {
   //define LL name for use with LLHelpers
   public static final String LLName = "limelight";
   public static final String LL2Name = "limelight2";
+  public static final AprilTagFieldLayout aprilTagFieldLayout = AprilTagFields.k2024Crescendo.loadAprilTagLayoutField();
+
+  public static final double[] LCamMatrix = new double[]{0, 0, 0};
+  public static final double[] RCamMatrix = new double[]{0, 0, 0};
+
+  public static final Transform3d LeftCamOffset = new Transform3d();
+  public static final Transform3d RightCamOffset = new Transform3d();
 
 
   public static final class ColorConstants{

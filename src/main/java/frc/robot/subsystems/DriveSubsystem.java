@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import 
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
@@ -165,6 +166,7 @@ public class DriveSubsystem extends SubsystemBase {
   public void periodic() {
     rightTrigger = m_driverControllerLocal.getRightTriggerAxis();
     leftTrigger = m_driverControllerLocal.getLeftTriggerAxis();
+    m_currentRotation = m_gyro.getYaw().getValue();
 
     // Update the odometry in the periodic block
     m_poseEstimator.update(

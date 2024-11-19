@@ -7,10 +7,17 @@ import frc.robot.LimelightHelpers;
 import static java.lang.Math.*;
 
 import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonUtils; 
 
+import com.ctre.phoenix.Logger;
+
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 
 public class Vision extends SubsystemBase {
@@ -35,6 +42,9 @@ public class Vision extends SubsystemBase {
         boolean LCamTarget = LCamoutput.hasTargets();
 
         //if camera has a target, get data. Code breaks if you don't check for target
+        if (LCamoutput.getMultiTagResult().estimatedPose.isPresent) {
+            Transform3d LfieldToCamera = LCamoutput.getMultiTagResult().estimatedPose.best;
+        }
         if(LCamTarget){
             var LCamTargetData = LCamoutput.getBestTarget();
             double LCamYaw = LCamTargetData.getYaw();
@@ -42,6 +52,11 @@ public class Vision extends SubsystemBase {
             double LCamSkew = LCamTargetData.getSkew();
             double LCamArea = LCamTargetData.getArea();
             double LCamError = LCamTargetData.getPoseAmbiguity();
+            var LCamPose = LCamTargetData.getBestCameraToTarget();
+            
+
+            Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(
+                LCamPose, Constants.aprilTagFieldLayout.getTagPose(LCamTargetData.getFiducialId()), );
 
             SmartDashboard.putNumber("LeftCamError", LCamError);
             SmartDashboard.putNumber("LeftCamArea", LCamArea);
@@ -50,6 +65,9 @@ public class Vision extends SubsystemBase {
             SmartDashboard.putNumber("LeftCamPitch", LCamPitch);
         }
 
+        if (RCamoutput.getMultiTagResult().estimatedPose.isPresent) {
+            Transform3d RfieldToCamera = RCamoutput.getMultiTagResult().estimatedPose.best;
+        }
         if(RCamTarget){
             var RCamTargetData = RCamoutput.getBestTarget();
             double RCamYaw = RCamTargetData.getYaw();
@@ -57,14 +75,18 @@ public class Vision extends SubsystemBase {
             double RCamSkew = RCamTargetData.getSkew();
             double RCamArea = RCamTargetData.getArea();
             double RCamError = RCamTargetData.getPoseAmbiguity();
+            var RCamPose = RCamTargetData.getBestCameraToTarget();
+
+            Pose3d robotPose = PhotonUtils.estimateFieldToRobotAprilTag(
+                RCamPose, Constants.aprilTagFieldLayout.getTagPose(RCamTargetData.getFiducialId()), Constants.RightCamOffset);
 
             SmartDashboard.putNumber("RightCamYaw", RCamYaw);
             SmartDashboard.putNumber("RightCamPitch", RCamPitch);
             SmartDashboard.putNumber("RightCamSkew", RCamSkew);
             SmartDashboard.putNumber("RightCamArea", RCamArea);
             SmartDashboard.putNumber("RightCamError", RCamError);
+            //SmartDashboard.putData("RightCamPose", RCamPose);
         }
-
 
         SmartDashboard.putBoolean("LeftCamTarget?", LCamTarget);
         SmartDashboard.putBoolean("RightCamTarget?", RCamTarget);
